@@ -6,7 +6,8 @@ import {
   action,
   Action,
 } from "easy-peasy";
-import { API, IsHttps } from "../constants";
+import { API, IsHttps } from "../utils/constants";
+import { sleep } from "../utils/utils";
 
 export interface IApiMessagesResponse {
   messages: string[];
@@ -15,12 +16,14 @@ export interface IApiMessagesResponse {
 export interface IStoreModel {
   init: Thunk<IStoreModel>;
 
-  setupWebsocket: Thunk<IStoreModel>;
+  setupWebsocket: Thunk<IStoreModel, { timeout: number } | void>;
 
   fetchMessages: Thunk<IStoreModel>;
   setMessages: Action<IStoreModel, string[]>;
+  setWebsocketConnected: Action<IStoreModel, boolean>;
 
   messages: string[];
+  websocketConnected: boolean;
 }
 
 const storeModel: IStoreModel = {
@@ -46,21 +49,48 @@ const storeModel: IStoreModel = {
     }
   }),
 
-  setupWebsocket: thunk(async (actions, _, { getState }) => {
-    const socketUrl = `${IsHttps ? "wss" : "ws"}://${API}/receive-messages`;
-    const ws = new WebSocket(socketUrl);
-    ws.onmessage = (event) => {
-      const messages = getState().messages.slice(0);
-      messages.push(event.data);
-      actions.setMessages(messages);
-    };
+  setupWebsocket: thunk(async (actions, payload, { getState }) => {
+    try {
+      if (payload && payload.timeout) {
+        console.log(
+          `setupWebsocket: sleeping for ${payload.timeout} ms for trying to connect`
+        );
+        await sleep(payload.timeout);
+      }
+      const socketUrl = `${IsHttps ? "wss" : "ws"}://${API}/receive-messages`;
+      const ws = new WebSocket(socketUrl);
+      actions.setWebsocketConnected(true);
+      ws.onmessage = (event) => {
+        const messages = getState().messages.slice(0);
+        messages.push(event.data);
+        actions.setMessages(messages);
+      };
+
+      ws.onclose = () => {
+        console.log("setupWebsocket: Socket was closed");
+        actions.setupWebsocket({
+          timeout: payload && payload.timeout ? payload.timeout * 2 : 1000,
+        });
+      };
+    } catch (e) {
+      console.log("setupWebsocket: Unable to open connection");
+      console.log(e);
+      actions.setupWebsocket({
+        timeout: payload && payload.timeout ? payload.timeout * 2 : 1000,
+      });
+    }
   }),
 
   setMessages: action((state, payload) => {
     state.messages = payload;
   }),
 
+  setWebsocketConnected: action((state, payload) => {
+    state.websocketConnected = payload;
+  }),
+
   messages: [],
+  websocketConnected: false,
 };
 export const store = createStore(storeModel);
 

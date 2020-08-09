@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { StoreProvider } from "easy-peasy";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-import { StoreProvider } from "easy-peasy";
 import { store } from "./state/index";
 
 ReactDOM.render(
