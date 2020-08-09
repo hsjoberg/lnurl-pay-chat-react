@@ -14,7 +14,8 @@ const API_URL_SEND_TEXT_BECH32 = bech32.encode(
   "lnurl",
   bech32.toWords(
     stringToUint8Array(window.location.protocol + "//" + API_URL_SEND_TEXT)
-  )
+  ),
+  1024
 );
 
 const HeaderContainer = styled.View`
