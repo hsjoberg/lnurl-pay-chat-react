@@ -83,7 +83,9 @@ table {
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 0.1px #f1f1f1;
   font-family: 'Righteous' !important;
-  font-size: calc(3.35vw + 30px);
+  font-size: calc(3vw + 35px);
+  margin-left: 12px;
+  margin-right: 12px;
   user-select: none;
 }
 
