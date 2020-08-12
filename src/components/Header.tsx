@@ -1,22 +1,11 @@
 import React from "react";
-import { Dimensions, Text } from "react-native";
+import { Text } from "react-native";
 import styled from "@emotion/native";
 import QRCode from "react-native-qrcode-svg";
-import bech32 from "bech32";
 
-import { stringToUint8Array } from "../utils/utils";
-import { API } from "../utils/constants";
+import { API_URL_SEND_TEXT_BECH32 } from "../utils/constants";
 import { Theme, themeDark } from "../style/theme";
 import { useStoreState } from "../state";
-
-const API_URL_SEND_TEXT = `${API}/send-text`;
-const API_URL_SEND_TEXT_BECH32 = bech32.encode(
-  "lnurl",
-  bech32.toWords(
-    stringToUint8Array(window.location.protocol + "//" + API_URL_SEND_TEXT)
-  ),
-  1024
-);
 
 const HeaderContainer = styled.View`
   flex-direction: row;
@@ -26,6 +15,7 @@ const HeaderContainer = styled.View`
 `;
 
 const HeaderTextContainer = styled.View`
+  margin-top: 5px;
   padding: 10px;
 `;
 
@@ -65,8 +55,8 @@ const WebSocketConnectedCircle = styled.Text<{ connected: boolean }>`
 
 export default function HeaderComponent() {
   const websocketConnected = useStoreState((store) => store.websocketConnected);
+  const isSmallDevice = useStoreState((store) => store.isSmallDevice);
 
-  const smallDevice = Dimensions.get("window").width < 500;
   return (
     <HeaderContainer>
       <WebSocketStatusText>
@@ -78,21 +68,25 @@ export default function HeaderComponent() {
       <HeaderTextContainer>
         <div className="header">
           <Text style={{ alignSelf: "center" }}>
-            <Text>lnurl-pay chat</Text>
+            <Text>{"lnurl-pay chat"}</Text>
           </Text>
         </div>
-        <Description>Scan QR-code to write a chat message</Description>
+        {!isSmallDevice && (
+          <Description>Scan QR-code to write a chat message</Description>
+        )}
       </HeaderTextContainer>
-      <QrContainer>
-        <a href={`lightning:${API_URL_SEND_TEXT_BECH32.toUpperCase()}`}>
-          <QRCode
-            quietZone={10}
-            backgroundColor={themeDark.colors.white}
-            value={API_URL_SEND_TEXT_BECH32}
-            size={smallDevice ? 150 : 250}
-          />
-        </a>
-      </QrContainer>
+      {!isSmallDevice && (
+        <QrContainer>
+          <a href={`lightning:${API_URL_SEND_TEXT_BECH32.toUpperCase()}`}>
+            <QRCode
+              quietZone={10}
+              backgroundColor={themeDark.colors.white}
+              value={API_URL_SEND_TEXT_BECH32}
+              size={250}
+            />
+          </a>
+        </QrContainer>
+      )}
     </HeaderContainer>
   );
 }

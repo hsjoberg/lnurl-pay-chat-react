@@ -6,8 +6,9 @@ import {
   action,
   Action,
 } from "easy-peasy";
-import { API, IsHttps } from "../utils/constants";
+import { API, IsHttps, isMobile } from "../utils/constants";
 import { sleep } from "../utils/utils";
+import { Dimensions } from "react-native";
 
 export interface IApiMessagesResponse {
   messages: string[];
@@ -16,14 +17,17 @@ export interface IApiMessagesResponse {
 export interface IStoreModel {
   init: Thunk<IStoreModel>;
 
-  setupWebsocket: Thunk<IStoreModel, { timeout: number } | void>;
-
   fetchMessages: Thunk<IStoreModel>;
+  setupWebsocket: Thunk<IStoreModel, { timeout: number } | void>;
+  setupDimensionChange: Thunk<IStoreModel>;
+
   setMessages: Action<IStoreModel, string[]>;
   setWebsocketConnected: Action<IStoreModel, boolean>;
+  setIsSmallDevice: Action<IStoreModel, boolean>;
 
   messages: string[];
   websocketConnected: boolean;
+  isSmallDevice: boolean;
 }
 
 const storeModel: IStoreModel = {
@@ -32,6 +36,8 @@ const storeModel: IStoreModel = {
 
     await actions.fetchMessages();
     await actions.setupWebsocket();
+    actions.setupDimensionChange();
+    actions.setIsSmallDevice(isMobile(Dimensions.get("window").width));
   }),
 
   fetchMessages: thunk(async (actions) => {
@@ -81,8 +87,18 @@ const storeModel: IStoreModel = {
     }
   }),
 
+  setupDimensionChange: thunk((actions) => {
+    Dimensions.addEventListener("change", ({ window }) => {
+      actions.setIsSmallDevice(isMobile(window.width));
+    });
+  }),
+
   setMessages: action((state, payload) => {
     state.messages = payload;
+  }),
+
+  setIsSmallDevice: action((state, payload) => {
+    state.isSmallDevice = payload;
   }),
 
   setWebsocketConnected: action((state, payload) => {
@@ -91,6 +107,7 @@ const storeModel: IStoreModel = {
 
   messages: [],
   websocketConnected: false,
+  isSmallDevice: true,
 };
 export const store = createStore(storeModel);
 
