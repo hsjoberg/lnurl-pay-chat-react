@@ -37,7 +37,6 @@ const storeModel: IStoreModel = {
     await actions.fetchMessages();
     await actions.setupWebsocket();
     actions.setupDimensionChange();
-    actions.setIsSmallDevice(isMobile(Dimensions.get("window").width));
   }),
 
   fetchMessages: thunk(async (actions) => {
@@ -107,7 +106,7 @@ const storeModel: IStoreModel = {
 
   messages: [],
   websocketConnected: false,
-  isSmallDevice: true,
+  isSmallDevice: isMobile(Dimensions.get("window").width),
 };
 export const store = createStore(storeModel);
 
