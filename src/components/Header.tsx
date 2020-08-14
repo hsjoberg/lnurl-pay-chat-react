@@ -56,6 +56,7 @@ const WebSocketConnectedCircle = styled.Text<{ connected: boolean }>`
 export default function HeaderComponent() {
   const websocketConnected = useStoreState((store) => store.websocketConnected);
   const isSmallDevice = useStoreState((store) => store.isSmallDevice);
+  const numUsers = useStoreState((store) => store.numUsers);
 
   return (
     <HeaderContainer>
@@ -63,6 +64,8 @@ export default function HeaderComponent() {
         <WebSocketConnectedCircle connected={websocketConnected} />
         <Text>
           WebSocket {websocketConnected ? "Connected" : "Disconnected"}
+          {websocketConnected &&
+            ` - ${numUsers} user${numUsers !== 1 ? "s" : ""} online`}
         </Text>
       </WebSocketStatusText>
       <HeaderTextContainer>

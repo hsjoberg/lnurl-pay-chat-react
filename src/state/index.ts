@@ -24,8 +24,10 @@ export interface IStoreModel {
   setMessages: Action<IStoreModel, string[]>;
   setWebsocketConnected: Action<IStoreModel, boolean>;
   setIsSmallDevice: Action<IStoreModel, boolean>;
+  setNumUsers: Action<IStoreModel, number>;
 
   messages: string[];
+  numUsers: number;
   websocketConnected: boolean;
   isSmallDevice: boolean;
 }
@@ -62,13 +64,24 @@ const storeModel: IStoreModel = {
         );
         await sleep(payload.timeout);
       }
-      const socketUrl = `${IsHttps ? "wss" : "ws"}://${API}/receive-messages`;
+      const socketUrl = `${IsHttps ? "wss" : "ws"}://${API}/ws`;
       const ws = new WebSocket(socketUrl);
       actions.setWebsocketConnected(true);
       ws.onmessage = (event) => {
-        const messages = getState().messages.slice(0);
-        messages.push(event.data);
-        actions.setMessages(messages);
+        try {
+          const result = JSON.parse(event.data);
+
+          if (result.type === "MESSAGE") {
+            const messages = getState().messages.slice(0);
+            messages.push(result.data);
+            actions.setMessages(messages);
+          } else if (result.type === "NUM_USERS") {
+            actions.setNumUsers(result.data);
+          }
+        } catch (e) {
+          console.error("Error: " + e.message);
+          console.error("Unknown response from ws: " + event);
+        }
       };
 
       ws.onclose = () => {
@@ -100,11 +113,16 @@ const storeModel: IStoreModel = {
     state.isSmallDevice = payload;
   }),
 
+  setNumUsers: action((state, payload) => {
+    state.numUsers = payload;
+  }),
+
   setWebsocketConnected: action((state, payload) => {
     state.websocketConnected = payload;
   }),
 
   messages: [],
+  numUsers: 0,
   websocketConnected: false,
   isSmallDevice: isMobile(Dimensions.get("window").width),
 };
