@@ -32,4 +32,5 @@ export const ChatBoxText = styled.Text`
   margin-top: 2.5px;
   font-size: calc(15px + 0.45vw);
   color: ${(props) => (props.theme as Theme).common.text};
+  overflow-wrap: anywhere;
 `;

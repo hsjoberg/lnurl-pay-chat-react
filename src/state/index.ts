@@ -66,7 +66,10 @@ const storeModel: IStoreModel = {
       }
       const socketUrl = `${IsHttps ? "wss" : "ws"}://${API}/ws`;
       const ws = new WebSocket(socketUrl);
-      actions.setWebsocketConnected(true);
+      ws.onopen = () => {
+        actions.setWebsocketConnected(true);
+      };
+
       ws.onmessage = (event) => {
         try {
           const result = JSON.parse(event.data);
