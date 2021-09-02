@@ -15,6 +15,7 @@ import {
   ChatBoxText,
 } from "./components/common";
 import { API_URL_SEND_TEXT_BECH32 } from "./utils/constants";
+import { extractDescription } from "./utils/name-desc";
 
 function App() {
   const init = useStoreActions((store) => store.init);
@@ -55,10 +56,14 @@ function App() {
           <ChatContainer ref={chatBox} onContentSizeChange={scrollToEnd}>
             <View style={scrollFade}></View>
             {messages.map((message, i) => {
+              const { name, description } = extractDescription(message);
+
               return (
                 <ChatBox key={i}>
-                  <ChatBoxAuthor>Anonymous:</ChatBoxAuthor>
-                  <ChatBoxText>{message}</ChatBoxText>
+                  <ChatBoxAuthor>
+                    {name ?? "Anonymous"}:
+                  </ChatBoxAuthor>
+                  <ChatBoxText>{description}</ChatBoxText>
                 </ChatBox>
               );
             })}
