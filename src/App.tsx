@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { ScrollView, View, Button, Linking } from "react-native";
+import { ScrollView, View, Button, Linking, Platform } from "react-native";
 import { Global, ThemeProvider } from "@emotion/react";
 
 import Header from "./components/Header";
@@ -16,6 +16,7 @@ import {
 } from "./components/common";
 import { API_URL_SEND_TEXT_BECH32 } from "./utils/constants";
 import { extractDescription } from "./utils/name-desc";
+import Hyperlink from "react-native-hyperlink";
 
 function App() {
   const init = useStoreActions((store) => store.init);
@@ -43,6 +44,14 @@ function App() {
     );
   };
 
+  const openUrl = (url: string, _text: string) => {
+    if (Platform.OS == "web") {
+      window.open(url, "_blank");
+    } else {
+      Linking.openURL(url);
+    }
+  };
+
   return (
     <ThemeProvider theme={themeDark}>
       <Container>
@@ -63,7 +72,9 @@ function App() {
                   <ChatBoxAuthor>
                     {name ?? "Anonymous"}:
                   </ChatBoxAuthor>
-                  <ChatBoxText>{description}</ChatBoxText>
+                  <ChatBoxText>
+                    <Hyperlink onPress={openUrl} linkStyle={{ color: "rgb(26, 26, 221)"}}>{description}</Hyperlink>
+                  </ChatBoxText>
                 </ChatBox>
               );
             })}
