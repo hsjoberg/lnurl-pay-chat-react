@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { ScrollView, View, Button, Linking, Platform } from "react-native";
 import { Global, ThemeProvider } from "@emotion/react";
-import { formatDistance, formatDistanceStrict, formatISO } from "date-fns"
 
 import Header from "./components/Header";
 import { useStoreActions, useStoreState } from "./state";
@@ -47,7 +46,7 @@ function App() {
   };
 
   const openUrl = (url: string, _text: string) => {
-    if (Platform.OS == "web") {
+    if (Platform.OS === "web") {
       window.open(url, "_blank");
     } else {
       Linking.openURL(url);

@@ -86,7 +86,7 @@ const storeModel: IStoreModel = {
           } else if (result.type === "NUM_USERS") {
             actions.setNumUsers(result.data);
           }
-        } catch (e) {
+        } catch (e: any) {
           console.error("Error: " + e.message);
           console.error("Unknown response from ws: " + event);
         }

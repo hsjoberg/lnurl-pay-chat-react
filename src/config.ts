@@ -1,5 +1,5 @@
 export const config: IConfig = {
-  api: "192.168.1.1:8080/api"
+  api: "192.168.1.111:8087/api"
 }
 
 export interface IConfig {
