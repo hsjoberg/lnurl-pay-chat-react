@@ -10,8 +10,13 @@ import { API, IsHttps, isMobile } from "../utils/constants";
 import { sleep } from "../utils/utils";
 import { Dimensions } from "react-native";
 
+export interface IMessage {
+  text: string;
+  timestamp: number;
+}
+
 export interface IApiMessagesResponse {
-  messages: string[];
+  messages: IMessage[];
 }
 
 export interface IStoreModel {
@@ -21,12 +26,12 @@ export interface IStoreModel {
   setupWebsocket: Thunk<IStoreModel, { timeout: number } | void>;
   setupDimensionChange: Thunk<IStoreModel>;
 
-  setMessages: Action<IStoreModel, string[]>;
+  setMessages: Action<IStoreModel, IMessage[]>;
   setWebsocketConnected: Action<IStoreModel, boolean>;
   setIsSmallDevice: Action<IStoreModel, boolean>;
   setNumUsers: Action<IStoreModel, number>;
 
-  messages: string[];
+  messages: IMessage[];
   numUsers: number;
   websocketConnected: boolean;
   isSmallDevice: boolean;
@@ -60,7 +65,7 @@ const storeModel: IStoreModel = {
     try {
       if (payload && payload.timeout) {
         console.log(
-          `setupWebsocket: sleeping for ${payload.timeout} ms for trying to connect`
+          `setupWebsocket: sleeping for ${payload.timeout} ms before trying to connect`
         );
         await sleep(payload.timeout);
       }
@@ -76,7 +81,7 @@ const storeModel: IStoreModel = {
 
           if (result.type === "MESSAGE") {
             const messages = getState().messages.slice(0);
-            messages.push(result.data);
+            messages.push(JSON.parse(result.data));
             actions.setMessages(messages);
           } else if (result.type === "NUM_USERS") {
             actions.setNumUsers(result.data);

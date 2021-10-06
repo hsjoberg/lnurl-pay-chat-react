@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { ScrollView, View, Button, Linking, Platform } from "react-native";
 import { Global, ThemeProvider } from "@emotion/react";
+import { formatDistance, formatDistanceStrict, formatISO } from "date-fns"
 
 import Header from "./components/Header";
 import { useStoreActions, useStoreState } from "./state";
@@ -17,6 +18,7 @@ import {
 import { API_URL_SEND_TEXT_BECH32 } from "./utils/constants";
 import { extractDescription } from "./utils/name-desc";
 import Hyperlink from "react-native-hyperlink";
+import Ticker from "./components/Ticker";
 
 function App() {
   const init = useStoreActions((store) => store.init);
@@ -65,15 +67,15 @@ function App() {
           <ChatContainer ref={chatBox} onContentSizeChange={scrollToEnd}>
             <View style={scrollFade}></View>
             {messages.map((message, i) => {
-              const { name, description } = extractDescription(message);
+              const { name, description } = extractDescription(message.text);
 
               return (
                 <ChatBox key={i}>
                   <ChatBoxAuthor>
-                    {name ?? "Anonymous"}:
+                    {name ?? "Anonymous"}{message.timestamp && <> - <Ticker time={message.timestamp} /> ago</>}:
                   </ChatBoxAuthor>
                   <ChatBoxText>
-                    <Hyperlink onPress={openUrl} linkStyle={{ color: "rgb(26, 26, 221)"}}>{description}</Hyperlink>
+                    <Hyperlink onPress={openUrl} linkStyle={{ color: "rgb(77, 121, 241)"}}>{description}</Hyperlink>
                   </ChatBoxText>
                 </ChatBox>
               );
