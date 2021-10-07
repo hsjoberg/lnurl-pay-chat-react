@@ -15,8 +15,13 @@ export interface IMessage {
   timestamp: number;
 }
 
+export interface IMessageWS {
+  m: string;
+  ts: number;
+}
+
 export interface IApiMessagesResponse {
-  messages: { m: string, ts: number }[];
+  messages: IMessageWS[];
 }
 
 export interface IStoreModel {
@@ -83,11 +88,11 @@ const storeModel: IStoreModel = {
 
           if (result.type === "MESSAGE") {
             const messages = getState().messages.slice(0);
-            messages.push(
-              JSON.parse(result.data).map(
-                (message: any) => ({ text: message.m, timestamp: message.ts })
-              )
-            );
+            const msgWs: IMessageWS = JSON.parse(result.data);
+            messages.push({
+              text: msgWs.m,
+              timestamp: msgWs.ts,
+            });
             actions.setMessages(messages);
           } else if (result.type === "NUM_USERS") {
             actions.setNumUsers(result.data);
