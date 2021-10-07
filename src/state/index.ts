@@ -16,7 +16,7 @@ export interface IMessage {
 }
 
 export interface IApiMessagesResponse {
-  messages: IMessage[];
+  messages: { m: string, ts: number }[];
 }
 
 export interface IStoreModel {
@@ -54,10 +54,10 @@ const storeModel: IStoreModel = {
         throw new Error("Unable to retrieve chat messages");
       }
 
-      const json: IApiMessagesResponse = (await result.json()).map(
+      const json: IApiMessagesResponse = await result.json();
+      actions.setMessages(json.messages.map(
         (message: any) => ({ text: message.m, timestamp: message.ts })
-      );
-      actions.setMessages(json.messages);
+      ));
     } catch (e) {
       console.error(e);
     }
