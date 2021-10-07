@@ -54,7 +54,9 @@ const storeModel: IStoreModel = {
         throw new Error("Unable to retrieve chat messages");
       }
 
-      const json: IApiMessagesResponse = await result.json();
+      const json: IApiMessagesResponse = (await result.json()).map(
+        (message: any) => ({ text: message.m, timestamp: message.ts })
+      );
       actions.setMessages(json.messages);
     } catch (e) {
       console.error(e);
