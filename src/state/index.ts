@@ -81,7 +81,11 @@ const storeModel: IStoreModel = {
 
           if (result.type === "MESSAGE") {
             const messages = getState().messages.slice(0);
-            messages.push(JSON.parse(result.data));
+            messages.push(
+              JSON.parse(result.data).map(
+                (message: any) => ({ text: message.m, timestamp: message.ts })
+              )
+            );
             actions.setMessages(messages);
           } else if (result.type === "NUM_USERS") {
             actions.setNumUsers(result.data);
