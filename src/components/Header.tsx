@@ -6,6 +6,7 @@ import QRCode from "react-native-qrcode-svg";
 import { API_URL_SEND_TEXT_BECH32 } from "../utils/constants";
 import { Theme, themeDark } from "../style/theme";
 import { useStoreState } from "../state";
+import HyperLink from "react-native-hyperlink";
 
 const HeaderContainer = styled.View`
   flex-direction: row;
@@ -27,7 +28,7 @@ const QrContainer = styled.View`
 
 const Description = styled.Text`
   margin-top: 5px;
-  font-size: calc(0.27vw + 14px);
+  font-size: calc(0.27vw + 13px);
   color: ${(props) => (props.theme as Theme).common.text};
   text-align: center;
 `;
@@ -75,7 +76,19 @@ export default function HeaderComponent() {
           </Text>
         </div>
         {!isSmallDevice && (
-          <Description>Scan QR-code to write a chat message</Description>
+          <>
+            <Description>
+              This chat is a testing playground for{" "}
+              <HyperLink linkText="LUD-12" linkDefault linkStyle={{ color: "rgb(77, 121, 241)"}}>
+                https://github.com/fiatjaf/lnurl-rfc/blob/luds/12.md
+              </HyperLink>{" "}
+              and{" "}
+              <HyperLink linkText="LUD-18" linkDefault linkStyle={{ color: "rgb(77, 121, 241)"}}>
+                https://github.com/fiatjaf/lnurl-rfc/blob/luds/18.md
+              </HyperLink>
+              </Description>
+            <Description>Scan QR-code to write a chat message</Description>
+          </>
         )}
       </HeaderTextContainer>
       {!isSmallDevice && (
