@@ -7,6 +7,7 @@ import { API_URL_SEND_TEXT_BECH32 } from "../utils/constants";
 import { Theme, themeDark } from "../style/theme";
 import { useStoreState } from "../state";
 import HyperLink from "react-native-hyperlink";
+import { config } from "../config";
 
 const HeaderContainer = styled.View`
   flex-direction: row;
@@ -16,8 +17,8 @@ const HeaderContainer = styled.View`
 `;
 
 const HeaderTextContainer = styled.View`
-  margin-top: 5px;
-  padding: 10px;
+  padding-top: 10px;
+  margin: 10px;
 `;
 
 const QrContainer = styled.View`
@@ -28,7 +29,7 @@ const QrContainer = styled.View`
 
 const Description = styled.Text`
   margin-top: 5px;
-  font-size: calc(0.27vw + 13px);
+  font-size: calc(0.28vw + 12px);
   color: ${(props) => (props.theme as Theme).common.text};
   text-align: center;
 `;
@@ -81,13 +82,18 @@ export default function HeaderComponent() {
               This chat is a testing playground for{" "}
               <HyperLink linkText="LUD-12" linkDefault linkStyle={{ color: "rgb(77, 121, 241)"}}>
                 https://github.com/fiatjaf/lnurl-rfc/blob/luds/12.md
-              </HyperLink>{" "}
-              and{" "}
+              </HyperLink>,{" "}
               <HyperLink linkText="LUD-18" linkDefault linkStyle={{ color: "rgb(77, 121, 241)"}}>
                 https://github.com/fiatjaf/lnurl-rfc/blob/luds/18.md
+              </HyperLink> and{" "}
+              <HyperLink linkText="Lightning Address" linkDefault linkStyle={{ color: "rgb(77, 121, 241)"}}>
+                https://lightningaddress.com
               </HyperLink>
-              </Description>
-            <Description>Scan QR-code to write a chat message</Description>
+            </Description>
+            <Description>
+              Scan QR-code to write a chat message
+              {config.lightningAddress && <> or pay to ⚡️ {config.lightningAddress}</>}
+            </Description>
           </>
         )}
       </HeaderTextContainer>
